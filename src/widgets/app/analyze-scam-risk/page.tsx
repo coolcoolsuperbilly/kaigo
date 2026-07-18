@@ -2,14 +2,22 @@
 
 import { useTheme, useWidgetSDK } from '@nitrostack/widgets';
 import { useState } from 'react';
+import {
+  Loader2,
+  Search,
+  RotateCcw,
+  Flame,
+  Check
+} from 'lucide-react';
+import '../style.css';
 
 export const dynamic = 'force-dynamic';
 
 interface ScamAnalysisData {
   success: boolean;
-  decision?: string;
+  decision?: 'BLOCK' | 'FLAG' | 'ALLOW' | 'MANUAL_REVIEW';
   riskScore?: number;
-  riskLevel?: string;
+  riskLevel?: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
   isScam?: boolean;
   confidence?: number;
   reason?: string;
@@ -20,35 +28,34 @@ interface ScamAnalysisData {
 }
 
 export default function AnalyzeScamRiskWidget() {
-  const theme = useTheme();
+  // theme is intentionally not used to drive palette — this tile keeps its
+  // own dark "poster" identity regardless of host theme, same as a real
+  // Netflix embed would.
+  useTheme();
   const { isReady, getToolOutput, callTool } = useWidgetSDK();
+
   const [formData, setFormData] = useState({
     senderHandle: '',
     receiverHandle: '',
-    amountInCents: '',
+    amount: '',
     note: '',
     messageText: ''
   });
   const [loading, setLoading] = useState(false);
-
   const data = getToolOutput<ScamAnalysisData>();
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleAnalyze = async () => {
-    if (!formData.senderHandle && !formData.messageText) {
-      alert('Please enter at least sender handle or message text');
-      return;
-    }
-
+    if (!formData.senderHandle && !formData.messageText) return;
     setLoading(true);
     try {
       await callTool('analyze_scam_risk', {
         senderHandle: formData.senderHandle || undefined,
         receiverHandle: formData.receiverHandle || undefined,
-        amountInCents: formData.amountInCents ? parseFloat(formData.amountInCents) * 100 : undefined,
+        amountInCents: formData.amount ? Math.round(parseFloat(formData.amount) * 100) : undefined,
         note: formData.note || undefined,
         messageText: formData.messageText || undefined
       });
@@ -59,304 +66,190 @@ export default function AnalyzeScamRiskWidget() {
     }
   };
 
-  const isDark = theme === 'dark';
+  const isSubmitDisabled = loading || (!formData.senderHandle && !formData.messageText);
 
-  const cardBg = isDark
-    ? 'linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(15, 23, 42, 0.98))'
-    : 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)';
-  const textColor = isDark ? '#f8fafc' : '#0f172a';
-  const subTextColor = isDark ? '#94a3b8' : '#64748b';
-  const borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
-  const inputBg = isDark ? 'rgba(15, 23, 42, 0.6)' : '#ffffff';
-  const inputBorder = isDark ? 'rgba(255, 255, 255, 0.12)' : '#e2e8f0';
-
-  const getRiskColor = (level?: string) => {
+  // Risk -> design-system severity classes (see netflix-style-guide.md).
+  const getRiskTheme = (level?: string) => {
     switch (level) {
-      case 'CRITICAL': return '#ef4444';
-      case 'HIGH': return '#f97316';
-      case 'MEDIUM': return '#eab308';
-      case 'LOW': return '#10b981';
-      default: return '#64748b';
-    }
-  };
-
-  const getRiskBadgeBg = (level?: string) => {
-    switch (level) {
-      case 'CRITICAL': return isDark ? 'rgba(239,68,68,0.2)' : '#fee2e2';
-      case 'HIGH': return isDark ? 'rgba(249,115,22,0.2)' : '#ffedd5';
-      case 'MEDIUM': return isDark ? 'rgba(234,179,8,0.2)' : '#fef9c3';
-      case 'LOW': return isDark ? 'rgba(16,185,129,0.2)' : '#d1fae5';
-      default: return isDark ? 'rgba(100,116,139,0.2)' : '#f1f5f9';
+      case 'CRITICAL':
+        return { hero: 'nf-hero--critical', score: 'nf-score--negative', label: 'CRITICAL' };
+      case 'HIGH':
+        return { hero: 'nf-hero--high', score: 'nf-score--negative', label: 'HIGH' };
+      case 'MEDIUM':
+        return { hero: 'nf-hero--medium', score: 'nf-score--caution', label: 'MEDIUM' };
+      case 'LOW':
+        return { hero: 'nf-hero--low', score: 'nf-score--positive', label: 'LOW' };
+      default:
+        return { hero: 'nf-hero--neutral', score: 'nf-score--positive', label: '' };
     }
   };
 
   if (!isReady) {
     return (
-      <div style={{
-        padding: '32px',
-        textAlign: 'center',
-        color: subTextColor,
-        background: cardBg,
-        borderRadius: '20px',
-        border: `1px solid ${borderColor}`
-      }}>
-        <div style={{ display: 'inline-block', width: '28px', height: '28px', border: '3px solid rgba(139,92,246,0.2)', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: '12px' }} />
-        <div style={{ fontSize: '14px', fontWeight: 500 }}>Initializing Security Engine...</div>
+      <div className="nf-wrapper">
+        <div className="nf-card nf-loading">
+          <Loader2 className="nf-spin" size={22} color="#E50914" />
+        </div>
       </div>
     );
   }
 
-  if (data?.success && data?.riskLevel) {
-    const riskColor = getRiskColor(data.riskLevel);
-    const riskBg = getRiskBadgeBg(data.riskLevel);
-
-    return (
-      <div style={{
-        padding: '28px',
-        background: cardBg,
-        borderRadius: '24px',
-        border: `1px solid ${riskColor}`,
-        color: textColor,
-        maxWidth: '480px',
-        boxShadow: `0 25px 50px -12px ${riskColor}33`,
-        backdropFilter: 'blur(16px)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: '12px',
-              background: riskBg,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '22px',
-              color: riskColor
-            }}>
-              🛡️
-            </div>
-            <div>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
-                Scam Risk Analysis
-              </h3>
-              <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: subTextColor }}>
-                Verdict: <strong style={{ color: riskColor }}>{data.decision}</strong>
-              </p>
-            </div>
-          </div>
-          <span style={{
-            padding: '6px 12px',
-            borderRadius: '20px',
-            fontSize: '12px',
-            fontWeight: 800,
-            background: riskBg,
-            color: riskColor,
-            letterSpacing: '0.5px',
-            border: `1px solid ${riskColor}44`
-          }}>
-            {data.riskLevel}
-          </span>
-        </div>
-
-        <div style={{
-          background: isDark ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.03)',
-          padding: '18px',
-          borderRadius: '16px',
-          marginBottom: '16px',
-          border: `1px solid ${borderColor}`
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-            <div>
-              <p style={{ margin: '0 0 2px 0', fontSize: '11px', color: subTextColor, textTransform: 'uppercase' }}>Threat Score</p>
-              <p style={{ margin: 0, fontSize: '28px', fontWeight: 800, color: riskColor, fontFamily: 'Outfit, sans-serif' }}>
-                {data.riskScore}<span style={{ fontSize: '14px', opacity: 0.6 }}>/100</span>
-              </p>
-            </div>
-            <div>
-              <p style={{ margin: '0 0 2px 0', fontSize: '11px', color: subTextColor, textTransform: 'uppercase' }}>Confidence</p>
-              <p style={{ margin: 0, fontSize: '20px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
-                {data.confidence !== undefined ? `${(data.confidence * 100).toFixed(0)}%` : 'N/A'}
-              </p>
-            </div>
-          </div>
-          {data.reason && (
-            <p style={{ margin: '8px 0 0 0', fontSize: '13px', lineHeight: 1.5, opacity: 0.9, paddingTop: '8px', borderTop: `1px solid ${borderColor}` }}>
-              {data.reason}
-            </p>
-          )}
-        </div>
-
-        {data.threats && data.threats.length > 0 && (
-          <div style={{ marginBottom: '16px' }}>
-            <p style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: 700, color: subTextColor, textTransform: 'uppercase' }}>
-              🚩 Identified Threat Flags
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {data.threats.map((threat, idx) => (
-                <div key={idx} style={{
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  background: isDark ? 'rgba(239, 68, 68, 0.1)' : '#fef2f2',
-                  fontSize: '12px',
-                  color: isDark ? '#fca5a5' : '#b91c1c',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <span style={{ fontSize: '8px' }}>🔴</span> {threat}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {data.recommendations && data.recommendations.length > 0 && (
-          <div>
-            <p style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: 700, color: subTextColor, textTransform: 'uppercase' }}>
-              💡 Security Recommendations
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {data.recommendations.map((rec, idx) => (
-                <div key={idx} style={{
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  background: isDark ? 'rgba(59, 130, 246, 0.1)' : '#eff6ff',
-                  fontSize: '12px',
-                  color: isDark ? '#93c5fd' : '#1e40af',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <span>🔹</span> {rec}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
+  const riskTheme = getRiskTheme(data?.riskLevel);
+  const safetyScore = data?.riskScore !== undefined ? Math.max(0, 100 - data.riskScore) : undefined;
 
   return (
-    <div style={{
-      padding: '28px',
-      background: cardBg,
-      borderRadius: '24px',
-      border: `1px solid ${borderColor}`,
-      color: textColor,
-      maxWidth: '480px',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-      backdropFilter: 'blur(16px)'
-    }}>
-      <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-        <div style={{
-          width: '44px',
-          height: '44px',
-          borderRadius: '12px',
-          background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '20px',
-          color: '#ffffff',
-          boxShadow: '0 8px 16px -4px rgba(139, 92, 246, 0.5)'
-        }}>
-          🔍
-        </div>
-        <div>
-          <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 700, fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.3px' }}>
-            Analyze Scam Risk
-          </h2>
-          <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: subTextColor }}>
-            Real-time heuristic fraud threat scan
-          </p>
-        </div>
-      </div>
-
-      <div style={{ marginBottom: '14px' }}>
-        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: subTextColor, marginBottom: '6px' }}>
-          Sender Handle / Phone Number
-        </label>
-        <input
-          type="text"
-          placeholder="e.g. john.doe@fufa or +919876543210"
-          value={formData.senderHandle}
-          onChange={(e) => handleChange('senderHandle', e.target.value)}
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            borderRadius: '10px',
-            border: `1px solid ${inputBorder}`,
-            background: inputBg,
-            color: textColor,
-            fontSize: '13px',
-            outline: 'none'
-          }}
-        />
-      </div>
-
-      <div style={{ marginBottom: '14px' }}>
-        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: subTextColor, marginBottom: '6px' }}>
-          SMS / Message Text / Link URL
-        </label>
-        <textarea
-          placeholder="Paste SMS body or link text here for scam analysis..."
-          value={formData.messageText}
-          onChange={(e) => handleChange('messageText', e.target.value)}
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            borderRadius: '10px',
-            border: `1px solid ${inputBorder}`,
-            background: inputBg,
-            color: textColor,
-            fontSize: '13px',
-            outline: 'none',
-            minHeight: '70px',
-            fontFamily: 'inherit'
-          }}
-        />
-      </div>
-
-      <button
-        type="button"
-        onClick={handleAnalyze}
-        disabled={loading || (!formData.senderHandle && !formData.messageText)}
-        style={{
-          width: '100%',
-          padding: '14px',
-          borderRadius: '12px',
-          border: 'none',
-          background: loading || (!formData.senderHandle && !formData.messageText)
-            ? isDark ? '#334155' : '#cbd5e1'
-            : 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
-          color: loading || (!formData.senderHandle && !formData.messageText)
-            ? isDark ? '#64748b' : '#94a3b8'
-            : '#ffffff',
-          fontSize: '15px',
-          fontWeight: 600,
-          fontFamily: 'Outfit, sans-serif',
-          cursor: loading || (!formData.senderHandle && !formData.messageText) ? 'not-allowed' : 'pointer',
-          boxShadow: loading || (!formData.senderHandle && !formData.messageText) ? 'none' : '0 10px 20px -5px rgba(139, 92, 246, 0.4)',
-          transition: 'all 0.2s ease',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px'
-        }}
-      >
-        {loading ? (
+    <div className="nf-wrapper">
+      <div className="nf-card">
+        {data?.success && data?.riskLevel ? (
           <>
-            <span style={{ display: 'inline-block', width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#ffffff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-            Analyzing Fraud Indicators...
+            <div className={`nf-hero ${riskTheme.hero}`}>
+              <span className="nf-brand-mark">Threat Scan</span>
+              <h3 className="nf-hero-title">
+                {data.isScam ? 'Likely Scam Detected' : 'Scan Complete'}
+              </h3>
+              <p className="nf-hero-sub">Automated risk assessment result</p>
+
+              <div className="nf-score-row">
+                <div>
+                  <div className={`nf-score ${riskTheme.score}`}>{safetyScore}%</div>
+                  <div className="nf-score-label">Safety Score</div>
+                </div>
+                <div className="nf-rating-chip">
+                  <Flame size={11} />
+                  {riskTheme.label}
+                </div>
+              </div>
+            </div>
+
+            <div className="nf-body">
+              <div className="nf-row-between">
+                <span className="nf-eyebrow">Verdict</span>
+                <span className="nf-value">{data.decision}</span>
+              </div>
+
+              {data.reason && <p className="nf-synopsis">{data.reason}</p>}
+
+              {data.threats && data.threats.length > 0 && (
+                <>
+                  <p className="nf-section-title">Flagged For</p>
+                  <div className="nf-pills">
+                    {data.threats.map((threat, idx) => (
+                      <span className="nf-pill" key={idx}>{threat}</span>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {data.recommendations && data.recommendations.length > 0 && (
+                <>
+                  {data.threats && data.threats.length > 0 && <hr className="nf-divider" />}
+                  <p className="nf-section-title">Recommended Actions</p>
+                  <ul className="nf-list">
+                    {data.recommendations.map((rec, idx) => (
+                      <li className="nf-list-item" key={idx}>
+                        <Check size={14} className="nf-list-icon" />
+                        <span>{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              <div className="nf-actions">
+                <button
+                  type="button"
+                  className="nf-btn nf-btn-ghost"
+                  onClick={() => setFormData({ senderHandle: '', receiverHandle: '', amount: '', note: '', messageText: '' })}
+                >
+                  <RotateCcw size={14} />
+                  New Scan
+                </button>
+              </div>
+            </div>
           </>
         ) : (
-          'Run Scam Security Scan →'
+          <>
+            <div className="nf-hero nf-hero--neutral" style={{ paddingBottom: 20 }}>
+              <span className="nf-brand-mark">Threat Scan</span>
+              <h3 className="nf-hero-title">Scam Risk Analysis</h3>
+              <p className="nf-hero-sub">Scan a handle, message, or link for threat indicators</p>
+            </div>
+
+            <div className="nf-body">
+              <div className="nf-field">
+                <label className="nf-field-label">Target Entity</label>
+                <input
+                  type="text"
+                  placeholder="Phone, email, or handle"
+                  value={formData.senderHandle}
+                  onChange={(e) => handleChange('senderHandle', e.target.value)}
+                  disabled={loading}
+                  className="nf-input"
+                />
+              </div>
+
+              <div className="nf-field">
+                <label className="nf-field-label">Message / Link Payload</label>
+                <textarea
+                  placeholder="Paste the suspicious SMS, email body, or URL..."
+                  value={formData.messageText}
+                  onChange={(e) => handleChange('messageText', e.target.value)}
+                  disabled={loading}
+                  className="nf-textarea"
+                />
+              </div>
+
+              <div className="nf-row-2">
+                <div className="nf-field">
+                  <label className="nf-field-label">Amount</label>
+                  <div className="nf-prefix-group">
+                    <span className="nf-prefix">$</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={formData.amount}
+                      onChange={(e) => handleChange('amount', e.target.value)}
+                      disabled={loading}
+                      className="nf-input"
+                    />
+                  </div>
+                </div>
+                <div className="nf-field">
+                  <label className="nf-field-label">Context</label>
+                  <input
+                    type="text"
+                    placeholder="Optional note..."
+                    value={formData.note}
+                    onChange={(e) => handleChange('note', e.target.value)}
+                    disabled={loading}
+                    className="nf-input"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleAnalyze}
+                disabled={isSubmitDisabled}
+                className="nf-cta"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={15} className="nf-spin" />
+                    Scanning...
+                  </>
+                ) : (
+                  <>
+                    <Search size={15} />
+                    Analyze Risk
+                  </>
+                )}
+              </button>
+            </div>
+          </>
         )}
-      </button>
+      </div>
     </div>
   );
 }

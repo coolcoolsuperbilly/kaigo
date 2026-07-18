@@ -1,0 +1,519 @@
+/* ==========================================================================
+   NETFLIX-VIBE DESIGN SYSTEM
+   A reusable dark, cinematic, poster-card aesthetic.
+   Import this file, then use the .nf-* classes below on any page or widget.
+   ========================================================================== */
+
+:root {
+    /* ---- Core palette ---- */
+    --nf-bg: #141414;
+    /* card / page background */
+    --nf-surface: #1f1f1f;
+    /* inputs, raised surfaces */
+    --nf-surface-2: #262626;
+    /* pills, chips */
+    --nf-surface-hover: #363636;
+    --nf-border: #2a2a2a;
+    --nf-border-strong: #333333;
+
+    --nf-red: #E50914;
+    /* brand / primary action */
+    --nf-red-hover: #f6121d;
+    --nf-green: #46D369;
+    /* positive / high score */
+    --nf-amber: #F5A623;
+    /* caution / medium */
+    --nf-red-soft: #E87C7C;
+    /* negative / low score, softer than brand red */
+
+    --nf-text: #ffffff;
+    --nf-text-muted: #b3b3b3;
+    --nf-text-dim: #8c8c8c;
+    --nf-text-faint: #6b6b6b;
+    --nf-placeholder: #666666;
+
+    /* ---- Severity gradient pairs (hero backgrounds) ---- */
+    --nf-grad-critical-from: #3d0000;
+    --nf-grad-critical-to: #7a0d0d;
+    --nf-grad-high-from: #4a0e0e;
+    --nf-grad-high-to: #8a1c1c;
+    --nf-grad-medium-from: #4a3200;
+    --nf-grad-medium-to: #8a5a00;
+    --nf-grad-low-from: #0d3320;
+    --nf-grad-low-to: #14532d;
+    --nf-grad-neutral-from: #1a1a1a;
+    --nf-grad-neutral-to: #000000;
+
+    /* ---- Scale ---- */
+    --nf-radius: 8px;
+    --nf-radius-sm: 4px;
+    --nf-radius-xs: 3px;
+    --nf-font: 'Helvetica Neue', Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+.nf-wrapper {
+    font-family: var(--nf-font);
+    color: var(--nf-text);
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.nf-wrapper * {
+    box-sizing: border-box;
+}
+
+/* Full-bleed page variant (no max-width clamp) */
+.nf-page {
+    font-family: var(--nf-font);
+    color: var(--nf-text);
+    background: var(--nf-bg);
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   Card shell
+   ========================================================================== */
+
+.nf-card {
+    border-radius: var(--nf-radius);
+    background: var(--nf-bg);
+    border: 1px solid var(--nf-border);
+    overflow: hidden;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.nf-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 28px 50px -12px rgba(0, 0, 0, 0.75);
+}
+
+/* Flat variant, no hover-lift — use inside lists/grids where lift feels busy */
+.nf-card--static:hover {
+    transform: none;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================================================
+   Hero / poster panel
+   Add a modifier class to set the gradient:
+   .nf-hero--critical / --high / --medium / --low / --neutral
+   ========================================================================== */
+
+.nf-hero {
+    position: relative;
+    padding: 22px 20px 18px 20px;
+    overflow: hidden;
+}
+
+.nf-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at top right, rgba(255, 255, 255, 0.10), transparent 60%),
+        linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.55) 100%);
+    pointer-events: none;
+}
+
+.nf-hero--critical {
+    background: linear-gradient(135deg, var(--nf-grad-critical-from), var(--nf-grad-critical-to));
+}
+
+.nf-hero--high {
+    background: linear-gradient(135deg, var(--nf-grad-high-from), var(--nf-grad-high-to));
+}
+
+.nf-hero--medium {
+    background: linear-gradient(135deg, var(--nf-grad-medium-from), var(--nf-grad-medium-to));
+}
+
+.nf-hero--low {
+    background: linear-gradient(135deg, var(--nf-grad-low-from), var(--nf-grad-low-to));
+}
+
+.nf-hero--neutral {
+    background: linear-gradient(135deg, var(--nf-grad-neutral-from), var(--nf-grad-neutral-to));
+}
+
+.nf-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: var(--nf-red);
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+}
+
+.nf-brand-mark::before {
+    content: '';
+    width: 4px;
+    height: 14px;
+    background: var(--nf-red);
+    display: inline-block;
+    border-radius: 1px;
+}
+
+.nf-hero-title {
+    position: relative;
+    z-index: 1;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 10px 0 2px 0;
+    text-transform: uppercase;
+}
+
+.nf-hero-sub {
+    position: relative;
+    z-index: 1;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.68);
+    margin: 0;
+}
+
+/* ---- Big score display (match %, safety score, health score, whatever) ---- */
+
+.nf-score-row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.nf-score {
+    font-size: 34px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.01em;
+}
+
+.nf-score--positive {
+    color: var(--nf-green);
+}
+
+.nf-score--caution {
+    color: var(--nf-amber);
+}
+
+.nf-score--negative {
+    color: var(--nf-red-soft);
+}
+
+.nf-score-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ---- Rating chip (like a maturity-rating box, top-right of hero) ---- */
+
+.nf-rating-chip {
+    margin-left: auto;
+    border: 1.5px solid rgba(255, 255, 255, 0.55);
+    color: var(--nf-text);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: var(--nf-radius-xs);
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ==========================================================================
+   Body
+   ========================================================================== */
+
+.nf-body {
+    padding: 18px 20px 20px 20px;
+}
+
+.nf-row-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.nf-eyebrow {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--nf-text-faint);
+    font-weight: 700;
+}
+
+.nf-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--nf-text);
+}
+
+.nf-synopsis {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--nf-text-muted);
+    margin: 0 0 16px 0;
+}
+
+.nf-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--nf-text-faint);
+    margin: 0 0 8px 0;
+}
+
+/* ---- Pills / genre tags ---- */
+
+.nf-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.nf-pill {
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: var(--nf-radius-sm);
+    background: var(--nf-surface-2);
+    color: #e5e5e5;
+    border: 1px solid var(--nf-border-strong);
+}
+
+/* ---- Checklist ---- */
+
+.nf-list {
+    list-style: none;
+    margin: 0 0 4px 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nf-list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #d2d2d2;
+}
+
+.nf-list-icon {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--nf-green);
+}
+
+.nf-divider {
+    height: 1px;
+    background: var(--nf-border);
+    margin: 16px 0;
+    border: none;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.nf-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.nf-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 38px;
+    border-radius: var(--nf-radius-sm);
+    font-size: 12.5px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+.nf-btn-primary {
+    background: #ffffff;
+    color: var(--nf-bg);
+}
+
+.nf-btn-primary:hover {
+    background: #d9d9d9;
+}
+
+.nf-btn-ghost {
+    background: var(--nf-surface-2);
+    color: var(--nf-text);
+}
+
+.nf-btn-ghost:hover {
+    background: var(--nf-surface-hover);
+}
+
+.nf-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Full-width brand CTA, e.g. a primary submit action */
+.nf-cta {
+    width: 100%;
+    height: 42px;
+    border-radius: var(--nf-radius-sm);
+    border: none;
+    background: var(--nf-red);
+    color: var(--nf-text);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.nf-cta:hover:not(:disabled) {
+    background: var(--nf-red-hover);
+}
+
+.nf-cta:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Form fields
+   ========================================================================== */
+
+.nf-field {
+    margin-bottom: 12px;
+}
+
+.nf-field-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--nf-text-dim);
+    margin-bottom: 6px;
+}
+
+.nf-input,
+.nf-textarea {
+    width: 100%;
+    background: var(--nf-surface);
+    border: 1.5px solid var(--nf-border-strong);
+    border-radius: var(--nf-radius-sm);
+    padding: 9px 11px;
+    font-size: 13px;
+    color: var(--nf-text);
+    font-family: inherit;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.nf-input::placeholder,
+.nf-textarea::placeholder {
+    color: var(--nf-placeholder);
+}
+
+.nf-input:focus,
+.nf-textarea:focus {
+    outline: none;
+    border-color: var(--nf-red);
+    background: #232323;
+}
+
+.nf-input:disabled,
+.nf-textarea:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.nf-textarea {
+    min-height: 72px;
+    resize: none;
+}
+
+.nf-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.nf-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.nf-prefix-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nf-prefix {
+    position: absolute;
+    left: 11px;
+    font-size: 13px;
+    color: var(--nf-placeholder);
+}
+
+.nf-prefix-group .nf-input {
+    padding-left: 20px;
+}
+
+/* ==========================================================================
+   Misc utilities
+   ========================================================================== */
+
+.nf-spin {
+    animation: nf-spin 0.9s linear infinite;
+}
+
+@keyframes nf-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.nf-loading {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
