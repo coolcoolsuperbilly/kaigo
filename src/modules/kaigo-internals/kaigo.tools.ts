@@ -480,7 +480,7 @@ export class KaigoTools {
       // 6. Write Double-Entry Log
       await dbClient.query(
         `INSERT INTO ledger_entries (id, transaction_id, wallet_id, amount) VALUES 
-         ($1, $2, $3, $4), ($5, $2, $6, $7)`,
+         ($1, $2, $3, $4), ($5, $6, $7, $8)`,
         [
           uuidv4(),
           txId,
