@@ -53,21 +53,28 @@ export default function InsuranceStatusWidget() {
   };
 
   const isDark = theme === 'dark';
-  const bgColor = isDark ? '#1f2937' : '#ffffff';
-  const textColor = isDark ? '#ffffff' : '#000000';
-  const borderColor = isDark ? '#374151' : '#e5e7eb';
-  const inputBg = isDark ? '#111827' : '#f9fafb';
+
+  const cardBg = isDark
+    ? 'linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(15, 23, 42, 0.98))'
+    : 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)';
+  const textColor = isDark ? '#f8fafc' : '#0f172a';
+  const subTextColor = isDark ? '#94a3b8' : '#64748b';
+  const borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+  const inputBg = isDark ? 'rgba(15, 23, 42, 0.6)' : '#ffffff';
+  const inputBorder = isDark ? 'rgba(255, 255, 255, 0.12)' : '#e2e8f0';
 
   if (!isReady) {
     return (
       <div style={{
-        padding: '24px',
+        padding: '32px',
         textAlign: 'center',
-        color: textColor,
-        background: bgColor,
-        borderRadius: '12px'
+        color: subTextColor,
+        background: cardBg,
+        borderRadius: '20px',
+        border: `1px solid ${borderColor}`
       }}>
-        Initializing...
+        <div style={{ display: 'inline-block', width: '28px', height: '28px', border: '3px solid rgba(245,158,11,0.2)', borderTopColor: '#f59e0b', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: '12px' }} />
+        <div style={{ fontSize: '14px', fontWeight: 500 }}>Connecting to Insurance Portal...</div>
       </div>
     );
   }
@@ -75,65 +82,96 @@ export default function InsuranceStatusWidget() {
   if (data?.success && data?.activeInsurances) {
     return (
       <div style={{
-        padding: '24px',
-        background: bgColor,
-        borderRadius: '12px',
+        padding: '28px',
+        background: cardBg,
+        borderRadius: '24px',
         border: `1px solid ${borderColor}`,
         color: textColor,
-        maxWidth: '600px'
+        maxWidth: '560px',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+        backdropFilter: 'blur(16px)'
       }}>
-        <div style={{ marginBottom: '20px' }}>
-          <h2 style={{ margin: '0 0 6px 0', fontSize: '22px', fontWeight: 'bold' }}>
-            🛡️ Insurance Status
-          </h2>
-          <p style={{ margin: 0, fontSize: '13px', opacity: 0.7 }}>
-            {data.activeInsurances.length} active policy(ies)
-          </p>
+        <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
+              Active Insurance Policies
+            </h2>
+            <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: subTextColor }}>
+              {data.activeInsurances.length} Active Coverage Plan(s)
+            </p>
+          </div>
+          <span style={{
+            padding: '4px 12px',
+            borderRadius: '20px',
+            fontSize: '11px',
+            fontWeight: 700,
+            background: isDark ? 'rgba(245, 158, 11, 0.2)' : '#fef3c7',
+            color: isDark ? '#fcd34d' : '#b45309',
+            border: `1px solid ${isDark ? 'rgba(245, 158, 11, 0.3)' : '#fde68a'}`
+          }}>
+            VERIFIED COVERAGE
+          </span>
         </div>
 
         {data.activeInsurances.length === 0 ? (
           <div style={{
-            padding: '32px',
+            padding: '40px',
             textAlign: 'center',
-            background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.05)',
-            borderRadius: '8px',
-            color: isDark ? '#9ca3af' : '#6b7280'
+            background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.03)',
+            borderRadius: '16px',
+            border: `1px dashed ${borderColor}`,
+            color: subTextColor
           }}>
-            <p style={{ margin: 0, fontSize: '14px' }}>No active insurance policies</p>
+            <p style={{ margin: 0, fontSize: '14px', fontWeight: 500 }}>No active insurance policies found for this account.</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {data.activeInsurances.map((policy, idx) => (
               <div
                 key={idx}
                 style={{
-                  padding: '16px',
+                  padding: '20px',
+                  borderRadius: '18px',
+                  background: isDark ? 'rgba(15, 23, 42, 0.6)' : '#ffffff',
                   border: `1px solid ${borderColor}`,
-                  borderRadius: '8px',
-                  background: isDark ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.02)'
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'start', gap: '12px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '24px' }}>🛡️</span>
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 'bold' }}>
-                      {policy.schemeName}
-                    </h4>
-                    <p style={{ margin: 0, fontSize: '12px', opacity: 0.7 }}>
-                      Policy: {policy.policyNumber}
-                    </p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '18px',
+                      color: '#ffffff'
+                    }}>
+                      🛡️
+                    </div>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
+                        {policy.schemeName}
+                      </h4>
+                      <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: subTextColor, fontFamily: 'monospace' }}>
+                        Policy: {policy.policyNumber}
+                      </p>
+                    </div>
                   </div>
                   <span style={{
-                    padding: '4px 8px',
-                    borderRadius: '4px',
+                    padding: '4px 10px',
+                    borderRadius: '12px',
                     fontSize: '11px',
-                    fontWeight: '600',
+                    fontWeight: 700,
                     background: policy.policyStatus === 'ACTIVE'
-                      ? isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'
-                      : isDark ? 'rgba(107, 114, 128, 0.2)' : 'rgba(107, 114, 128, 0.1)',
+                      ? isDark ? 'rgba(16, 185, 129, 0.2)' : '#d1fae5'
+                      : isDark ? 'rgba(100, 116, 139, 0.2)' : '#f1f5f9',
                     color: policy.policyStatus === 'ACTIVE'
-                      ? isDark ? '#10b981' : '#059669'
-                      : isDark ? '#9ca3af' : '#6b7280'
+                      ? isDark ? '#34d399' : '#047857'
+                      : subTextColor
                   }}>
                     {policy.policyStatus}
                   </span>
@@ -142,27 +180,28 @@ export default function InsuranceStatusWidget() {
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr 1fr',
-                  gap: '10px',
-                  marginBottom: '12px',
-                  fontSize: '12px'
+                  gap: '12px',
+                  marginBottom: '14px'
                 }}>
                   <div style={{
-                    background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.05)',
-                    padding: '8px',
-                    borderRadius: '4px'
+                    background: isDark ? 'rgba(0,0,0,0.25)' : '#f8fafc',
+                    padding: '12px',
+                    borderRadius: '12px',
+                    border: `1px solid ${borderColor}`
                   }}>
-                    <p style={{ margin: '0 0 2px 0', opacity: 0.7 }}>Coverage</p>
-                    <p style={{ margin: 0, fontWeight: '600' }}>
-                      ₹{(parseInt(policy.coverage) / 100).toFixed(2)}
+                    <span style={{ fontSize: '11px', color: subTextColor, textTransform: 'uppercase', fontWeight: 600 }}>Coverage Limit</span>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '16px', fontWeight: 800, fontFamily: 'Outfit, sans-serif', color: isDark ? '#fbbf24' : '#b45309' }}>
+                      ₹{(parseInt(policy.coverage) / 100).toLocaleString()}
                     </p>
                   </div>
                   <div style={{
-                    background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.05)',
-                    padding: '8px',
-                    borderRadius: '4px'
+                    background: isDark ? 'rgba(0,0,0,0.25)' : '#f8fafc',
+                    padding: '12px',
+                    borderRadius: '12px',
+                    border: `1px solid ${borderColor}`
                   }}>
-                    <p style={{ margin: '0 0 2px 0', opacity: 0.7 }}>Valid Until</p>
-                    <p style={{ margin: 0, fontWeight: '600' }}>
+                    <span style={{ fontSize: '11px', color: subTextColor, textTransform: 'uppercase', fontWeight: 600 }}>Valid Until</span>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '14px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
                       {new Date(policy.validUntil).toLocaleDateString()}
                     </p>
                   </div>
@@ -170,38 +209,31 @@ export default function InsuranceStatusWidget() {
 
                 {policy.claimProgress && policy.claimProgress.length > 0 && (
                   <div>
-                    <p style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: '600' }}>
-                      📋 Claim History:
+                    <p style={{ margin: '0 0 8px 0', fontSize: '11px', fontWeight: 700, color: subTextColor, textTransform: 'uppercase' }}>
+                      Claim History
                     </p>
-                    <div style={{
-                      maxHeight: '150px',
-                      overflowY: 'auto',
-                      border: `1px solid ${borderColor}`,
-                      borderRadius: '4px'
-                    }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       {policy.claimProgress.map((claim, cidx) => (
                         <div
                           key={cidx}
                           style={{
-                            padding: '8px 10px',
-                            borderBottom: cidx < policy.claimProgress.length - 1 ? `1px solid ${borderColor}` : 'none',
-                            fontSize: '11px',
+                            padding: '10px 12px',
+                            borderRadius: '10px',
+                            background: isDark ? 'rgba(0,0,0,0.15)' : '#ffffff',
+                            border: `1px solid ${borderColor}`,
+                            fontSize: '12px',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center'
                           }}
                         >
                           <div>
-                            <p style={{ margin: 0, fontWeight: '600' }}>
-                              {new Date(claim.claimDate).toLocaleDateString()}
-                            </p>
-                            <p style={{ margin: '2px 0 0 0', opacity: 0.7 }}>
-                              {claim.progressStatus}
-                            </p>
+                            <span style={{ fontWeight: 600, fontFamily: 'Outfit, sans-serif' }}>{new Date(claim.claimDate).toLocaleDateString()}</span>
+                            <span style={{ fontSize: '11px', color: subTextColor, marginLeft: '8px' }}>({claim.progressStatus})</span>
                           </div>
-                          <p style={{ margin: 0, fontWeight: 'bold', color: isDark ? '#f59e0b' : '#d97706' }}>
+                          <strong style={{ color: '#f59e0b', fontFamily: 'Outfit, sans-serif', fontSize: '14px' }}>
                             ₹{(claim.amount / 100).toFixed(2)}
-                          </p>
+                          </strong>
                         </div>
                       ))}
                     </div>
@@ -215,52 +247,45 @@ export default function InsuranceStatusWidget() {
     );
   }
 
-  if (data?.error) {
-    return (
-      <div style={{
-        padding: '24px',
-        background: isDark
-          ? 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)'
-          : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
-        borderRadius: '12px',
-        border: `2px solid ${isDark ? '#ef4444' : '#fca5a5'}`,
-        color: isDark ? '#ffffff' : '#7f1d1d'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-          <span style={{ fontSize: '32px' }}>❌</span>
-          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Error</h3>
-        </div>
-        <p style={{ margin: 0, fontSize: '14px' }}>{data.error}</p>
-      </div>
-    );
-  }
-
   return (
     <div style={{
-      padding: '24px',
-      background: bgColor,
-      borderRadius: '12px',
+      padding: '28px',
+      background: cardBg,
+      borderRadius: '24px',
       border: `1px solid ${borderColor}`,
       color: textColor,
-      maxWidth: '450px'
+      maxWidth: '440px',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      backdropFilter: 'blur(16px)'
     }}>
-      <div style={{ marginBottom: '20px' }}>
-        <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 'bold' }}>
-          🛡️ Insurance Status
-        </h2>
-        <p style={{ margin: 0, fontSize: '14px', opacity: 0.7 }}>
-          Track your insurance policies and claims
-        </p>
+      <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{
+          width: '44px',
+          height: '44px',
+          borderRadius: '12px',
+          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '20px',
+          color: '#ffffff',
+          boxShadow: '0 8px 16px -4px rgba(245, 158, 11, 0.5)'
+        }}>
+          🛡️
+        </div>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 700, fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.3px' }}>
+            Insurance Status
+          </h2>
+          <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: subTextColor }}>
+            Track active coverage plans and claims
+          </p>
+        </div>
       </div>
 
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{
-          display: 'block',
-          fontSize: '13px',
-          fontWeight: '500',
-          marginBottom: '4px'
-        }}>
-          FUFA Handle
+      <div style={{ marginBottom: '24px' }}>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: subTextColor, marginBottom: '6px' }}>
+          FUFA Account Handle
         </label>
         <input
           type="text"
@@ -270,36 +295,38 @@ export default function InsuranceStatusWidget() {
           disabled={loading}
           style={{
             width: '100%',
-            padding: '8px 10px',
-            borderRadius: '6px',
-            border: `1px solid ${borderColor}`,
+            padding: '12px 14px',
+            borderRadius: '12px',
+            border: `1px solid ${inputBorder}`,
             background: inputBg,
             color: textColor,
-            fontSize: '13px',
-            boxSizing: 'border-box',
-            opacity: loading ? 0.6 : 1
+            fontSize: '14px',
+            outline: 'none'
           }}
         />
       </div>
 
       <button
+        type="button"
         onClick={handleGetStatus}
         disabled={loading || !fufaHandle}
         style={{
           width: '100%',
-          padding: '12px',
-          borderRadius: '8px',
+          padding: '14px',
+          borderRadius: '12px',
           border: 'none',
           background: loading || !fufaHandle
-            ? isDark ? '#4b5563' : '#d1d5db'
-            : isDark ? '#f59e0b' : '#d97706',
+            ? isDark ? '#334155' : '#cbd5e1'
+            : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
           color: loading || !fufaHandle
-            ? isDark ? '#9ca3af' : '#6b7280'
+            ? isDark ? '#64748b' : '#94a3b8'
             : '#ffffff',
           fontSize: '15px',
-          fontWeight: '600',
+          fontWeight: 600,
+          fontFamily: 'Outfit, sans-serif',
           cursor: loading || !fufaHandle ? 'not-allowed' : 'pointer',
-          transition: 'all 0.2s',
+          boxShadow: loading || !fufaHandle ? 'none' : '0 10px 20px -5px rgba(245, 158, 11, 0.4)',
+          transition: 'all 0.2s ease',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -308,23 +335,13 @@ export default function InsuranceStatusWidget() {
       >
         {loading ? (
           <>
-            <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⏳</span>
-            Loading...
+            <span style={{ display: 'inline-block', width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#ffffff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            Checking Insurance Status...
           </>
         ) : (
-          <>
-            <span>📊</span>
-            Check Status
-          </>
+          'Check Insurance Status →'
         )}
       </button>
-
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }

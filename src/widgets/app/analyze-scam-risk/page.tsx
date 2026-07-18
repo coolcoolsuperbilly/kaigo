@@ -60,341 +60,288 @@ export default function AnalyzeScamRiskWidget() {
   };
 
   const isDark = theme === 'dark';
-  const bgColor = isDark ? '#1f2937' : '#ffffff';
-  const textColor = isDark ? '#ffffff' : '#000000';
-  const borderColor = isDark ? '#374151' : '#e5e7eb';
-  const inputBg = isDark ? '#111827' : '#f9fafb';
+
+  const cardBg = isDark
+    ? 'linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(15, 23, 42, 0.98))'
+    : 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)';
+  const textColor = isDark ? '#f8fafc' : '#0f172a';
+  const subTextColor = isDark ? '#94a3b8' : '#64748b';
+  const borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+  const inputBg = isDark ? 'rgba(15, 23, 42, 0.6)' : '#ffffff';
+  const inputBorder = isDark ? 'rgba(255, 255, 255, 0.12)' : '#e2e8f0';
 
   const getRiskColor = (level?: string) => {
     switch (level) {
-      case 'CRITICAL':
-        return isDark ? '#dc2626' : '#ef4444';
-      case 'HIGH':
-        return isDark ? '#f59e0b' : '#f97316';
-      case 'MEDIUM':
-        return isDark ? '#eab308' : '#eab308';
-      case 'LOW':
-        return isDark ? '#10b981' : '#22c55e';
-      default:
-        return isDark ? '#6b7280' : '#9ca3af';
+      case 'CRITICAL': return '#ef4444';
+      case 'HIGH': return '#f97316';
+      case 'MEDIUM': return '#eab308';
+      case 'LOW': return '#10b981';
+      default: return '#64748b';
     }
   };
 
-  const getRiskIcon = (level?: string) => {
+  const getRiskBadgeBg = (level?: string) => {
     switch (level) {
-      case 'CRITICAL':
-        return '🚨';
-      case 'HIGH':
-        return '⚠️';
-      case 'MEDIUM':
-        return '⚡';
-      case 'LOW':
-        return '✅';
-      default:
-        return '❓';
+      case 'CRITICAL': return isDark ? 'rgba(239,68,68,0.2)' : '#fee2e2';
+      case 'HIGH': return isDark ? 'rgba(249,115,22,0.2)' : '#ffedd5';
+      case 'MEDIUM': return isDark ? 'rgba(234,179,8,0.2)' : '#fef9c3';
+      case 'LOW': return isDark ? 'rgba(16,185,129,0.2)' : '#d1fae5';
+      default: return isDark ? 'rgba(100,116,139,0.2)' : '#f1f5f9';
     }
   };
 
   if (!isReady) {
     return (
       <div style={{
-        padding: '24px',
+        padding: '32px',
         textAlign: 'center',
-        color: textColor,
-        background: bgColor,
-        borderRadius: '12px'
+        color: subTextColor,
+        background: cardBg,
+        borderRadius: '20px',
+        border: `1px solid ${borderColor}`
       }}>
-        Initializing...
+        <div style={{ display: 'inline-block', width: '28px', height: '28px', border: '3px solid rgba(139,92,246,0.2)', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: '12px' }} />
+        <div style={{ fontSize: '14px', fontWeight: 500 }}>Initializing Security Engine...</div>
       </div>
     );
   }
 
   if (data?.success && data?.riskLevel) {
     const riskColor = getRiskColor(data.riskLevel);
-    const riskIcon = getRiskIcon(data.riskLevel);
+    const riskBg = getRiskBadgeBg(data.riskLevel);
 
     return (
       <div style={{
-        padding: '24px',
-        background: bgColor,
-        borderRadius: '12px',
-        border: `2px solid ${riskColor}`,
+        padding: '28px',
+        background: cardBg,
+        borderRadius: '24px',
+        border: `1px solid ${riskColor}`,
         color: textColor,
-        maxWidth: '500px'
+        maxWidth: '480px',
+        boxShadow: `0 25px 50px -12px ${riskColor}33`,
+        backdropFilter: 'blur(16px)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-          <span style={{ fontSize: '40px' }}>{riskIcon}</span>
-          <div>
-            <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>
-              Scam Risk Analysis
-            </h3>
-            <p style={{ margin: '4px 0 0 0', fontSize: '13px', opacity: 0.7 }}>
-              Decision: <strong style={{ color: riskColor }}>{data.decision}</strong>
-            </p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '12px',
+              background: riskBg,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '22px',
+              color: riskColor
+            }}>
+              🛡️
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
+                Scam Risk Analysis
+              </h3>
+              <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: subTextColor }}>
+                Verdict: <strong style={{ color: riskColor }}>{data.decision}</strong>
+              </p>
+            </div>
           </div>
+          <span style={{
+            padding: '6px 12px',
+            borderRadius: '20px',
+            fontSize: '12px',
+            fontWeight: 800,
+            background: riskBg,
+            color: riskColor,
+            letterSpacing: '0.5px',
+            border: `1px solid ${riskColor}44`
+          }}>
+            {data.riskLevel}
+          </span>
         </div>
 
         <div style={{
-          background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.05)',
-          padding: '16px',
-          borderRadius: '8px',
-          marginBottom: '16px'
+          background: isDark ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.03)',
+          padding: '18px',
+          borderRadius: '16px',
+          marginBottom: '16px',
+          border: `1px solid ${borderColor}`
         }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             <div>
-              <p style={{ margin: '0 0 4px 0', fontSize: '12px', opacity: 0.7 }}>Risk Score</p>
-              <p style={{ margin: 0, fontSize: '24px', fontWeight: 'bold', color: riskColor }}>
-                {data.riskScore}/100
+              <p style={{ margin: '0 0 2px 0', fontSize: '11px', color: subTextColor, textTransform: 'uppercase' }}>Threat Score</p>
+              <p style={{ margin: 0, fontSize: '28px', fontWeight: 800, color: riskColor, fontFamily: 'Outfit, sans-serif' }}>
+                {data.riskScore}<span style={{ fontSize: '14px', opacity: 0.6 }}>/100</span>
               </p>
             </div>
             <div>
-              <p style={{ margin: '0 0 4px 0', fontSize: '12px', opacity: 0.7 }}>Risk Level</p>
-              <p style={{ margin: 0, fontSize: '18px', fontWeight: 'bold', color: riskColor }}>
-                {data.riskLevel}
+              <p style={{ margin: '0 0 2px 0', fontSize: '11px', color: subTextColor, textTransform: 'uppercase' }}>Confidence</p>
+              <p style={{ margin: 0, fontSize: '20px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
+                {data.confidence !== undefined ? `${(data.confidence * 100).toFixed(0)}%` : 'N/A'}
               </p>
             </div>
           </div>
-          {data.confidence !== undefined && (
-            <div>
-              <p style={{ margin: '0 0 4px 0', fontSize: '12px', opacity: 0.7 }}>Confidence</p>
-              <p style={{ margin: 0, fontSize: '14px', fontWeight: '600' }}>
-                {(data.confidence * 100).toFixed(0)}%
-              </p>
-            </div>
+          {data.reason && (
+            <p style={{ margin: '8px 0 0 0', fontSize: '13px', lineHeight: 1.5, opacity: 0.9, paddingTop: '8px', borderTop: `1px solid ${borderColor}` }}>
+              {data.reason}
+            </p>
           )}
         </div>
 
-        {data.reason && (
-          <div style={{
-            background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.05)',
-            padding: '12px',
-            borderRadius: '6px',
-            marginBottom: '12px',
-            fontSize: '13px',
-            lineHeight: '1.5'
-          }}>
-            <p style={{ margin: '0 0 4px 0', fontWeight: '600' }}>Reason:</p>
-            <p style={{ margin: 0 }}>{data.reason}</p>
-          </div>
-        )}
-
         {data.threats && data.threats.length > 0 && (
-          <div style={{ marginBottom: '12px' }}>
-            <p style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: '600' }}>
-              🚩 Detected Threats:
+          <div style={{ marginBottom: '16px' }}>
+            <p style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: 700, color: subTextColor, textTransform: 'uppercase' }}>
+              🚩 Identified Threat Flags
             </p>
-            <ul style={{
-              margin: 0,
-              paddingLeft: '20px',
-              fontSize: '12px',
-              lineHeight: '1.6'
-            }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {data.threats.map((threat, idx) => (
-                <li key={idx} style={{ margin: '4px 0' }}>{threat}</li>
+                <div key={idx} style={{
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  background: isDark ? 'rgba(239, 68, 68, 0.1)' : '#fef2f2',
+                  fontSize: '12px',
+                  color: isDark ? '#fca5a5' : '#b91c1c',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <span style={{ fontSize: '8px' }}>🔴</span> {threat}
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
 
         {data.recommendations && data.recommendations.length > 0 && (
           <div>
-            <p style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: '600' }}>
-              💡 Recommendations:
+            <p style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: 700, color: subTextColor, textTransform: 'uppercase' }}>
+              💡 Security Recommendations
             </p>
-            <ul style={{
-              margin: 0,
-              paddingLeft: '20px',
-              fontSize: '12px',
-              lineHeight: '1.6'
-            }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {data.recommendations.map((rec, idx) => (
-                <li key={idx} style={{ margin: '4px 0' }}>{rec}</li>
+                <div key={idx} style={{
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  background: isDark ? 'rgba(59, 130, 246, 0.1)' : '#eff6ff',
+                  fontSize: '12px',
+                  color: isDark ? '#93c5fd' : '#1e40af',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <span>🔹</span> {rec}
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
-      </div>
-    );
-  }
-
-  if (data?.error) {
-    return (
-      <div style={{
-        padding: '24px',
-        background: isDark
-          ? 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)'
-          : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
-        borderRadius: '12px',
-        border: `2px solid ${isDark ? '#ef4444' : '#fca5a5'}`,
-        color: isDark ? '#ffffff' : '#7f1d1d'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-          <span style={{ fontSize: '32px' }}>❌</span>
-          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Error</h3>
-        </div>
-        <p style={{ margin: 0, fontSize: '14px' }}>{data.error}</p>
       </div>
     );
   }
 
   return (
     <div style={{
-      padding: '24px',
-      background: bgColor,
-      borderRadius: '12px',
+      padding: '28px',
+      background: cardBg,
+      borderRadius: '24px',
       border: `1px solid ${borderColor}`,
       color: textColor,
-      maxWidth: '500px'
+      maxWidth: '480px',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      backdropFilter: 'blur(16px)'
     }}>
-      <div style={{ marginBottom: '20px' }}>
-        <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 'bold' }}>
-          🔍 Analyze Scam Risk
-        </h2>
-        <p style={{ margin: 0, fontSize: '13px', opacity: 0.7 }}>
-          Check transaction or message for fraud indicators
-        </p>
+      <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{
+          width: '44px',
+          height: '44px',
+          borderRadius: '12px',
+          background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '20px',
+          color: '#ffffff',
+          boxShadow: '0 8px 16px -4px rgba(139, 92, 246, 0.5)'
+        }}>
+          🔍
+        </div>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 700, fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.3px' }}>
+            Analyze Scam Risk
+          </h2>
+          <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: subTextColor }}>
+            Real-time heuristic fraud threat scan
+          </p>
+        </div>
       </div>
 
-      <div style={{ maxHeight: '350px', overflowY: 'auto', paddingRight: '8px', marginBottom: '16px' }}>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{
-            display: 'block',
-            fontSize: '12px',
-            fontWeight: '500',
-            marginBottom: '4px'
-          }}>
-            Sender Handle
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. john.doe@fufa"
-            value={formData.senderHandle}
-            onChange={(e) => handleChange('senderHandle', e.target.value)}
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '8px 10px',
-              borderRadius: '6px',
-              border: `1px solid ${borderColor}`,
-              background: inputBg,
-              color: textColor,
-              fontSize: '12px',
-              boxSizing: 'border-box',
-              opacity: loading ? 0.6 : 1
-            }}
-          />
-        </div>
+      <div style={{ marginBottom: '14px' }}>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: subTextColor, marginBottom: '6px' }}>
+          Sender Handle / Phone Number
+        </label>
+        <input
+          type="text"
+          placeholder="e.g. john.doe@fufa or +919876543210"
+          value={formData.senderHandle}
+          onChange={(e) => handleChange('senderHandle', e.target.value)}
+          disabled={loading}
+          style={{
+            width: '100%',
+            padding: '10px 12px',
+            borderRadius: '10px',
+            border: `1px solid ${inputBorder}`,
+            background: inputBg,
+            color: textColor,
+            fontSize: '13px',
+            outline: 'none'
+          }}
+        />
+      </div>
 
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{
-            display: 'block',
-            fontSize: '12px',
-            fontWeight: '500',
-            marginBottom: '4px'
-          }}>
-            Receiver Handle
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. jane.smith@fufa"
-            value={formData.receiverHandle}
-            onChange={(e) => handleChange('receiverHandle', e.target.value)}
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '8px 10px',
-              borderRadius: '6px',
-              border: `1px solid ${borderColor}`,
-              background: inputBg,
-              color: textColor,
-              fontSize: '12px',
-              boxSizing: 'border-box',
-              opacity: loading ? 0.6 : 1
-            }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{
-            display: 'block',
-            fontSize: '12px',
-            fontWeight: '500',
-            marginBottom: '4px'
-          }}>
-            Amount (in Rupees)
-          </label>
-          <input
-            type="number"
-            placeholder="e.g. 500"
-            value={formData.amountInCents}
-            onChange={(e) => handleChange('amountInCents', e.target.value)}
-            disabled={loading}
-            step="0.01"
-            min="0"
-            style={{
-              width: '100%',
-              padding: '8px 10px',
-              borderRadius: '6px',
-              border: `1px solid ${borderColor}`,
-              background: inputBg,
-              color: textColor,
-              fontSize: '12px',
-              boxSizing: 'border-box',
-              opacity: loading ? 0.6 : 1
-            }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{
-            display: 'block',
-            fontSize: '12px',
-            fontWeight: '500',
-            marginBottom: '4px'
-          }}>
-            Note / Message
-          </label>
-          <textarea
-            placeholder="Transaction note or SMS message text"
-            value={formData.messageText || formData.note}
-            onChange={(e) => handleChange('messageText', e.target.value)}
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '8px 10px',
-              borderRadius: '6px',
-              border: `1px solid ${borderColor}`,
-              background: inputBg,
-              color: textColor,
-              fontSize: '12px',
-              boxSizing: 'border-box',
-              opacity: loading ? 0.6 : 1,
-              minHeight: '70px',
-              fontFamily: 'inherit',
-              resize: 'vertical'
-            }}
-          />
-        </div>
+      <div style={{ marginBottom: '14px' }}>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: subTextColor, marginBottom: '6px' }}>
+          SMS / Message Text / Link URL
+        </label>
+        <textarea
+          placeholder="Paste SMS body or link text here for scam analysis..."
+          value={formData.messageText}
+          onChange={(e) => handleChange('messageText', e.target.value)}
+          disabled={loading}
+          style={{
+            width: '100%',
+            padding: '10px 12px',
+            borderRadius: '10px',
+            border: `1px solid ${inputBorder}`,
+            background: inputBg,
+            color: textColor,
+            fontSize: '13px',
+            outline: 'none',
+            minHeight: '70px',
+            fontFamily: 'inherit'
+          }}
+        />
       </div>
 
       <button
+        type="button"
         onClick={handleAnalyze}
         disabled={loading || (!formData.senderHandle && !formData.messageText)}
         style={{
           width: '100%',
-          padding: '12px',
-          borderRadius: '8px',
+          padding: '14px',
+          borderRadius: '12px',
           border: 'none',
           background: loading || (!formData.senderHandle && !formData.messageText)
-            ? isDark ? '#4b5563' : '#d1d5db'
-            : isDark ? '#8b5cf6' : '#7c3aed',
+            ? isDark ? '#334155' : '#cbd5e1'
+            : 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
           color: loading || (!formData.senderHandle && !formData.messageText)
-            ? isDark ? '#9ca3af' : '#6b7280'
+            ? isDark ? '#64748b' : '#94a3b8'
             : '#ffffff',
-          fontSize: '14px',
-          fontWeight: '600',
+          fontSize: '15px',
+          fontWeight: 600,
+          fontFamily: 'Outfit, sans-serif',
           cursor: loading || (!formData.senderHandle && !formData.messageText) ? 'not-allowed' : 'pointer',
-          transition: 'all 0.2s',
+          boxShadow: loading || (!formData.senderHandle && !formData.messageText) ? 'none' : '0 10px 20px -5px rgba(139, 92, 246, 0.4)',
+          transition: 'all 0.2s ease',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -403,23 +350,13 @@ export default function AnalyzeScamRiskWidget() {
       >
         {loading ? (
           <>
-            <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⏳</span>
-            Analyzing...
+            <span style={{ display: 'inline-block', width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#ffffff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            Analyzing Fraud Indicators...
           </>
         ) : (
-          <>
-            <span>🔎</span>
-            Analyze Risk
-          </>
+          'Run Scam Security Scan →'
         )}
       </button>
-
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }

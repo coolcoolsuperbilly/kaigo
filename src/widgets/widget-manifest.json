@@ -2,47 +2,53 @@
   "version": "1.0.0",
   "widgets": [
     {
-      "uri": "/calculator-result",
-      "name": "Calculator Result",
-      "description": "Displays the result of a calculation with operation details",
-      "examples": [
-        {
-          "name": "Addition Example",
-          "description": "Shows the result of adding 5 + 3",
-          "data": {
-            "operation": "add",
-            "a": 5,
-            "b": 3,
-            "result": 8,
-            "expression": "5 + 3 = 8"
-          }
-        },
-        {
-          "name": "Multiplication Example",
-          "description": "Shows the result of multiplying 6 × 7",
-          "data": {
-            "operation": "multiply",
-            "a": 6,
-            "b": 7,
-            "result": 42,
-            "expression": "6 × 7 = 42"
-          }
-        },
-        {
-          "name": "Division Example",
-          "description": "Shows the result of dividing 20 ÷ 4",
-          "data": {
-            "operation": "divide",
-            "a": 20,
-            "b": 4,
-            "result": 5,
-            "expression": "20 ÷ 4 = 5"
-          }
-        }
-      ],
-      "tags": ["calculator", "math", "result"]
+      "uri": "/sign-in",
+      "name": "Sign In",
+      "description": "Interactive Sign In Form & Authentication Widget",
+      "tags": ["auth", "login", "fufa"]
+    },
+    {
+      "uri": "/generate-fufa-account",
+      "name": "Create FUFA Account",
+      "description": "Multi-field Onboarding & KYC Registration Widget",
+      "tags": ["auth", "onboarding", "register"]
+    },
+    {
+      "uri": "/check-balance",
+      "name": "Check Balance",
+      "description": "Displays available account wallet balance in Rupees and Paise",
+      "tags": ["wallet", "balance", "money"]
+    },
+    {
+      "uri": "/send-money",
+      "name": "Send Money",
+      "description": "Interactive Money Transfer Widget with Scam Risk Protection",
+      "tags": ["payments", "transfer", "scam-protection"]
+    },
+    {
+      "uri": "/analyze-scam-risk",
+      "name": "Analyze Scam Risk",
+      "description": "Real-time Financial Scam & Fraud Threat Analysis Widget",
+      "tags": ["security", "scam-prevention", "risk-analysis"]
+    },
+    {
+      "uri": "/check-statement",
+      "name": "Check Statement",
+      "description": "Ledger Transaction Statement & Debit/Credit History Widget",
+      "tags": ["statement", "ledger", "transactions"]
+    },
+    {
+      "uri": "/pension-status",
+      "name": "Pension Status",
+      "description": "Government & National Pension Scheme Tracking Widget",
+      "tags": ["pension", "schemes", "disbursements"]
+    },
+    {
+      "uri": "/insurance-status",
+      "name": "Insurance Status",
+      "description": "Active Insurance Policies & Claims Tracking Widget",
+      "tags": ["insurance", "claims", "policies"]
     }
   ],
-  "generatedAt": "2025-01-01T00:00:00.000Z"
+  "generatedAt": "2026-07-18T00:00:00.000Z"
 }
-

@@ -1,4 +1,4 @@
-import { ToolDecorator as Tool, ExecutionContext, z } from '@nitrostack/core';
+import { ToolDecorator as Tool, Widget, ExecutionContext, z } from '@nitrostack/core';
 import { pool, JWT_SECRET } from './db.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -20,6 +20,7 @@ export class KaigoTools {
       password: z.string().describe('User password')
     })
   })
+  @Widget('sign-in')
   async signIn(input: { fufaHandle: string; password: string }, ctx: ExecutionContext) {
     ctx.logger.info('Executing sign_in', { fufaHandle: input.fufaHandle });
     const dbClient = await pool.connect();
@@ -87,6 +88,7 @@ export class KaigoTools {
       password: z.string().min(6).describe('Password (minimum 6 characters)')
     })
   })
+  @Widget('generate-fufa-account')
   async generateFufaAccount(
     input: {
       email: string;
@@ -170,6 +172,7 @@ export class KaigoTools {
       fufaHandle: z.string().describe('FUFA handle to check balance for')
     })
   })
+  @Widget('check-balance')
   async checkBalance(input: { fufaHandle: string }, ctx: ExecutionContext) {
     ctx.logger.info('Executing check_balance', { fufaHandle: input.fufaHandle });
     try {
@@ -528,6 +531,7 @@ export class KaigoTools {
       bypassSecurityAlert: z.boolean().optional().describe('Set true if user reviewed and approved security alert')
     })
   })
+  @Widget('send-money')
   async sendMoney(
     input: {
       senderHandle: string;
@@ -575,6 +579,7 @@ export class KaigoTools {
       url: z.string().optional().describe('URL link in message')
     })
   })
+  @Widget('analyze-scam-risk')
   async analyzeScamRisk(input: SecurityCheckInput, ctx: ExecutionContext) {
     ctx.logger.info('Executing analyze_scam_risk', input as any);
     const verdict = analyzeTransactionSecurity(input);
@@ -826,6 +831,7 @@ export class KaigoTools {
       type: z.enum(['all', 'paid', 'recieved']).optional().describe('Filter by statement type')
     })
   })
+  @Widget('check-statement')
   async checkStatement(input: { fufaHandle: string; type?: 'all' | 'paid' | 'recieved' }, ctx: ExecutionContext) {
     ctx.logger.info('Executing check_statement', input);
     try {
@@ -964,6 +970,7 @@ export class KaigoTools {
       fufaHandle: z.string().describe('FUFA handle')
     })
   })
+  @Widget('pension-status')
   async getPensionStatus(input: { fufaHandle: string }, ctx: ExecutionContext) {
     ctx.logger.info('Executing get_pension_status', input);
     try {
@@ -1113,6 +1120,7 @@ export class KaigoTools {
       fufaHandle: z.string().describe('FUFA handle')
     })
   })
+  @Widget('insurance-status')
   async getInsuranceStatus(input: { fufaHandle: string }, ctx: ExecutionContext) {
     ctx.logger.info('Executing get_insurance_status', input);
     try {

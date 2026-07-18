@@ -52,21 +52,28 @@ export default function PensionStatusWidget() {
   };
 
   const isDark = theme === 'dark';
-  const bgColor = isDark ? '#1f2937' : '#ffffff';
-  const textColor = isDark ? '#ffffff' : '#000000';
-  const borderColor = isDark ? '#374151' : '#e5e7eb';
-  const inputBg = isDark ? '#111827' : '#f9fafb';
+
+  const cardBg = isDark
+    ? 'linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(15, 23, 42, 0.98))'
+    : 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)';
+  const textColor = isDark ? '#f8fafc' : '#0f172a';
+  const subTextColor = isDark ? '#94a3b8' : '#64748b';
+  const borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+  const inputBg = isDark ? 'rgba(15, 23, 42, 0.6)' : '#ffffff';
+  const inputBorder = isDark ? 'rgba(255, 255, 255, 0.12)' : '#e2e8f0';
 
   if (!isReady) {
     return (
       <div style={{
-        padding: '24px',
+        padding: '32px',
         textAlign: 'center',
-        color: textColor,
-        background: bgColor,
-        borderRadius: '12px'
+        color: subTextColor,
+        background: cardBg,
+        borderRadius: '20px',
+        border: `1px solid ${borderColor}`
       }}>
-        Initializing...
+        <div style={{ display: 'inline-block', width: '28px', height: '28px', border: '3px solid rgba(139,92,246,0.2)', borderTopColor: '#8b5cf6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: '12px' }} />
+        <div style={{ fontSize: '14px', fontWeight: 500 }}>Connecting to Pension Portal...</div>
       </div>
     );
   }
@@ -74,117 +81,141 @@ export default function PensionStatusWidget() {
   if (data?.success && data?.enrolledPensions) {
     return (
       <div style={{
-        padding: '24px',
-        background: bgColor,
-        borderRadius: '12px',
+        padding: '28px',
+        background: cardBg,
+        borderRadius: '24px',
         border: `1px solid ${borderColor}`,
         color: textColor,
-        maxWidth: '600px'
+        maxWidth: '560px',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+        backdropFilter: 'blur(16px)'
       }}>
-        <div style={{ marginBottom: '20px' }}>
-          <h2 style={{ margin: '0 0 6px 0', fontSize: '22px', fontWeight: 'bold' }}>
-            🏦 Pension Status
-          </h2>
-          <p style={{ margin: 0, fontSize: '13px', opacity: 0.7 }}>
-            {data.enrolledPensions.length} active enrollment(s)
-          </p>
+        <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
+              Pension Enrollments
+            </h2>
+            <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: subTextColor }}>
+              {data.enrolledPensions.length} Active Scheme(s) Enrolled
+            </p>
+          </div>
+          <span style={{
+            padding: '4px 12px',
+            borderRadius: '20px',
+            fontSize: '11px',
+            fontWeight: 700,
+            background: isDark ? 'rgba(139, 92, 246, 0.2)' : '#f3e8ff',
+            color: isDark ? '#c084fc' : '#7e22ce',
+            border: `1px solid ${isDark ? 'rgba(139, 92, 246, 0.3)' : '#e9d5ff'}`
+          }}>
+            NATIONAL PENSION SYSTEM
+          </span>
         </div>
 
         {data.enrolledPensions.length === 0 ? (
           <div style={{
-            padding: '32px',
+            padding: '40px',
             textAlign: 'center',
-            background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.05)',
-            borderRadius: '8px',
-            color: isDark ? '#9ca3af' : '#6b7280'
+            background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.03)',
+            borderRadius: '16px',
+            border: `1px dashed ${borderColor}`,
+            color: subTextColor
           }}>
-            <p style={{ margin: 0, fontSize: '14px' }}>No active pension enrollments</p>
+            <p style={{ margin: 0, fontSize: '14px', fontWeight: 500 }}>No active pension enrollments found for this account.</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {data.enrolledPensions.map((pension, idx) => (
               <div
                 key={idx}
                 style={{
-                  padding: '16px',
+                  padding: '20px',
+                  borderRadius: '18px',
+                  background: isDark ? 'rgba(15, 23, 42, 0.6)' : '#ffffff',
                   border: `1px solid ${borderColor}`,
-                  borderRadius: '8px',
-                  background: isDark ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.02)'
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'start', gap: '12px', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '24px' }}>📋</span>
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: 'bold' }}>
-                      {pension.schemeName}
-                    </h4>
-                    <p style={{ margin: 0, fontSize: '12px', opacity: 0.7 }}>
-                      PRAN: {pension.pranNumber}
-                    </p>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '18px',
+                      color: '#ffffff'
+                    }}>
+                      🏦
+                    </div>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
+                        {pension.schemeName}
+                      </h4>
+                      <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: subTextColor, fontFamily: 'monospace' }}>
+                        PRAN: {pension.pranNumber}
+                      </p>
+                    </div>
                   </div>
                   <span style={{
-                    padding: '4px 8px',
-                    borderRadius: '4px',
+                    padding: '4px 10px',
+                    borderRadius: '12px',
                     fontSize: '11px',
-                    fontWeight: '600',
+                    fontWeight: 700,
                     background: pension.accountStatus === 'ACTIVE'
-                      ? isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.1)'
-                      : isDark ? 'rgba(107, 114, 128, 0.2)' : 'rgba(107, 114, 128, 0.1)',
+                      ? isDark ? 'rgba(16, 185, 129, 0.2)' : '#d1fae5'
+                      : isDark ? 'rgba(100, 116, 139, 0.2)' : '#f1f5f9',
                     color: pension.accountStatus === 'ACTIVE'
-                      ? isDark ? '#10b981' : '#059669'
-                      : isDark ? '#9ca3af' : '#6b7280'
+                      ? isDark ? '#34d399' : '#047857'
+                      : subTextColor
                   }}>
                     {pension.accountStatus}
                   </span>
                 </div>
 
                 <div style={{
-                  background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.05)',
-                  padding: '10px',
-                  borderRadius: '6px',
-                  marginBottom: '12px',
+                  background: isDark ? 'rgba(0,0,0,0.25)' : '#f8fafc',
+                  padding: '12px 14px',
+                  borderRadius: '12px',
+                  marginBottom: '14px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
                   fontSize: '12px'
                 }}>
-                  <p style={{ margin: '0 0 4px 0', opacity: 0.7 }}>Bank Account</p>
-                  <p style={{ margin: 0, fontFamily: 'monospace', fontWeight: '600' }}>
-                    {pension.bankAccount}
-                  </p>
+                  <span style={{ color: subTextColor }}>Linked Bank Account:</span>
+                  <strong style={{ fontFamily: 'monospace' }}>{pension.bankAccount}</strong>
                 </div>
 
                 {pension.payoutProgress && pension.payoutProgress.length > 0 && (
                   <div>
-                    <p style={{ margin: '0 0 8px 0', fontSize: '12px', fontWeight: '600' }}>
-                      💰 Payout History:
+                    <p style={{ margin: '0 0 8px 0', fontSize: '11px', fontWeight: 700, color: subTextColor, textTransform: 'uppercase' }}>
+                      Recent Disbursements
                     </p>
-                    <div style={{
-                      maxHeight: '150px',
-                      overflowY: 'auto',
-                      border: `1px solid ${borderColor}`,
-                      borderRadius: '4px'
-                    }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       {pension.payoutProgress.map((payout, pidx) => (
                         <div
                           key={pidx}
                           style={{
-                            padding: '8px 10px',
-                            borderBottom: pidx < pension.payoutProgress.length - 1 ? `1px solid ${borderColor}` : 'none',
-                            fontSize: '11px',
+                            padding: '10px 12px',
+                            borderRadius: '10px',
+                            background: isDark ? 'rgba(0,0,0,0.15)' : '#ffffff',
+                            border: `1px solid ${borderColor}`,
+                            fontSize: '12px',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center'
                           }}
                         >
                           <div>
-                            <p style={{ margin: 0, fontWeight: '600' }}>
-                              {payout.payoutMonth}
-                            </p>
-                            <p style={{ margin: '2px 0 0 0', opacity: 0.7 }}>
-                              {payout.progressStatus}
-                            </p>
+                            <span style={{ fontWeight: 600, fontFamily: 'Outfit, sans-serif' }}>{payout.payoutMonth}</span>
+                            <span style={{ fontSize: '11px', color: subTextColor, marginLeft: '8px' }}>({payout.progressStatus})</span>
                           </div>
-                          <p style={{ margin: 0, fontWeight: 'bold', color: isDark ? '#10b981' : '#059669' }}>
+                          <strong style={{ color: '#10b981', fontFamily: 'Outfit, sans-serif', fontSize: '14px' }}>
                             ₹{(payout.amount / 100).toFixed(2)}
-                          </p>
+                          </strong>
                         </div>
                       ))}
                     </div>
@@ -198,52 +229,45 @@ export default function PensionStatusWidget() {
     );
   }
 
-  if (data?.error) {
-    return (
-      <div style={{
-        padding: '24px',
-        background: isDark
-          ? 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)'
-          : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
-        borderRadius: '12px',
-        border: `2px solid ${isDark ? '#ef4444' : '#fca5a5'}`,
-        color: isDark ? '#ffffff' : '#7f1d1d'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-          <span style={{ fontSize: '32px' }}>❌</span>
-          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Error</h3>
-        </div>
-        <p style={{ margin: 0, fontSize: '14px' }}>{data.error}</p>
-      </div>
-    );
-  }
-
   return (
     <div style={{
-      padding: '24px',
-      background: bgColor,
-      borderRadius: '12px',
+      padding: '28px',
+      background: cardBg,
+      borderRadius: '24px',
       border: `1px solid ${borderColor}`,
       color: textColor,
-      maxWidth: '450px'
+      maxWidth: '440px',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      backdropFilter: 'blur(16px)'
     }}>
-      <div style={{ marginBottom: '20px' }}>
-        <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 'bold' }}>
-          🏦 Pension Status
-        </h2>
-        <p style={{ margin: 0, fontSize: '14px', opacity: 0.7 }}>
-          Track your pension enrollments and payouts
-        </p>
+      <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{
+          width: '44px',
+          height: '44px',
+          borderRadius: '12px',
+          background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '20px',
+          color: '#ffffff',
+          boxShadow: '0 8px 16px -4px rgba(139, 92, 246, 0.5)'
+        }}>
+          🏦
+        </div>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 700, fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.3px' }}>
+            Pension Status
+          </h2>
+          <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: subTextColor }}>
+            Track NPS enrollments and payout progress
+          </p>
+        </div>
       </div>
 
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{
-          display: 'block',
-          fontSize: '13px',
-          fontWeight: '500',
-          marginBottom: '4px'
-        }}>
-          FUFA Handle
+      <div style={{ marginBottom: '24px' }}>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: subTextColor, marginBottom: '6px' }}>
+          FUFA Account Handle
         </label>
         <input
           type="text"
@@ -253,36 +277,38 @@ export default function PensionStatusWidget() {
           disabled={loading}
           style={{
             width: '100%',
-            padding: '8px 10px',
-            borderRadius: '6px',
-            border: `1px solid ${borderColor}`,
+            padding: '12px 14px',
+            borderRadius: '12px',
+            border: `1px solid ${inputBorder}`,
             background: inputBg,
             color: textColor,
-            fontSize: '13px',
-            boxSizing: 'border-box',
-            opacity: loading ? 0.6 : 1
+            fontSize: '14px',
+            outline: 'none'
           }}
         />
       </div>
 
       <button
+        type="button"
         onClick={handleGetStatus}
         disabled={loading || !fufaHandle}
         style={{
           width: '100%',
-          padding: '12px',
-          borderRadius: '8px',
+          padding: '14px',
+          borderRadius: '12px',
           border: 'none',
           background: loading || !fufaHandle
-            ? isDark ? '#4b5563' : '#d1d5db'
-            : isDark ? '#8b5cf6' : '#7c3aed',
+            ? isDark ? '#334155' : '#cbd5e1'
+            : 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
           color: loading || !fufaHandle
-            ? isDark ? '#9ca3af' : '#6b7280'
+            ? isDark ? '#64748b' : '#94a3b8'
             : '#ffffff',
           fontSize: '15px',
-          fontWeight: '600',
+          fontWeight: 600,
+          fontFamily: 'Outfit, sans-serif',
           cursor: loading || !fufaHandle ? 'not-allowed' : 'pointer',
-          transition: 'all 0.2s',
+          boxShadow: loading || !fufaHandle ? 'none' : '0 10px 20px -5px rgba(139, 92, 246, 0.4)',
+          transition: 'all 0.2s ease',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -291,23 +317,13 @@ export default function PensionStatusWidget() {
       >
         {loading ? (
           <>
-            <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⏳</span>
-            Loading...
+            <span style={{ display: 'inline-block', width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#ffffff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            Checking Pension Status...
           </>
         ) : (
-          <>
-            <span>📊</span>
-            Check Status
-          </>
+          'Check Pension Status →'
         )}
       </button>
-
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }

@@ -64,21 +64,28 @@ export default function SendMoneyWidget() {
   };
 
   const isDark = theme === 'dark';
-  const bgColor = isDark ? '#1f2937' : '#ffffff';
-  const textColor = isDark ? '#ffffff' : '#000000';
-  const borderColor = isDark ? '#374151' : '#e5e7eb';
-  const inputBg = isDark ? '#111827' : '#f9fafb';
+
+  const cardBg = isDark
+    ? 'linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(15, 23, 42, 0.98))'
+    : 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)';
+  const textColor = isDark ? '#f8fafc' : '#0f172a';
+  const subTextColor = isDark ? '#94a3b8' : '#64748b';
+  const borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)';
+  const inputBg = isDark ? 'rgba(15, 23, 42, 0.6)' : '#ffffff';
+  const inputBorder = isDark ? 'rgba(255, 255, 255, 0.12)' : '#e2e8f0';
 
   if (!isReady) {
     return (
       <div style={{
-        padding: '24px',
+        padding: '32px',
         textAlign: 'center',
-        color: textColor,
-        background: bgColor,
-        borderRadius: '12px'
+        color: subTextColor,
+        background: cardBg,
+        borderRadius: '20px',
+        border: `1px solid ${borderColor}`
       }}>
-        Initializing...
+        <div style={{ display: 'inline-block', width: '28px', height: '28px', border: '3px solid rgba(16,185,129,0.2)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: '12px' }} />
+        <div style={{ fontSize: '14px', fontWeight: 500 }}>Initializing Payment Engine...</div>
       </div>
     );
   }
@@ -86,29 +93,63 @@ export default function SendMoneyWidget() {
   if (data?.success && data?.transactionId) {
     return (
       <div style={{
-        padding: '24px',
+        padding: '28px',
         background: isDark
-          ? 'linear-gradient(135deg, #065f46 0%, #047857 100%)'
-          : 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)',
-        borderRadius: '12px',
-        border: `2px solid ${isDark ? '#10b981' : '#6ee7b7'}`,
-        color: isDark ? '#ffffff' : '#065f46'
+          ? 'linear-gradient(145deg, rgba(6, 78, 59, 0.9), rgba(4, 120, 87, 0.95))'
+          : 'linear-gradient(145deg, #ecfdf5 0%, #d1fae5 100%)',
+        borderRadius: '24px',
+        border: `1px solid ${isDark ? 'rgba(16, 185, 129, 0.4)' : '#a7f3d0'}`,
+        color: isDark ? '#ffffff' : '#065f46',
+        boxShadow: '0 25px 50px -12px rgba(16, 185, 129, 0.25)',
+        maxWidth: '440px',
+        backdropFilter: 'blur(16px)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-          <span style={{ fontSize: '32px' }}>✅</span>
-          <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>Transfer Complete!</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: '14px',
+            background: isDark ? 'rgba(255,255,255,0.15)' : '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '24px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+          }}>
+            ✅
+          </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
+              Transfer Complete!
+            </h3>
+            <span style={{
+              display: 'inline-block',
+              marginTop: '4px',
+              padding: '2px 8px',
+              borderRadius: '20px',
+              fontSize: '11px',
+              fontWeight: 700,
+              background: isDark ? 'rgba(255,255,255,0.2)' : '#10b981',
+              color: '#ffffff'
+            }}>
+              SETTLED IN LEDGER
+            </span>
+          </div>
         </div>
+
         <div style={{
-          background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.5)',
-          padding: '16px',
-          borderRadius: '8px',
+          background: isDark ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.7)',
+          padding: '20px',
+          borderRadius: '16px',
           fontSize: '14px',
-          lineHeight: '1.6'
+          lineHeight: 1.6,
+          border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.8)'}`
         }}>
-          <p style={{ margin: '0 0 8px 0' }}>
-            <strong>Transaction ID:</strong> {data.transactionId?.substring(0, 12)}...
-          </p>
-          <p style={{ margin: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={{ opacity: 0.8 }}>Transaction ID</span>
+            <strong style={{ fontFamily: 'monospace' }}>{data.transactionId?.substring(0, 12)}...</strong>
+          </div>
+          <p style={{ margin: '12px 0 0 0', paddingTop: '12px', borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)'}`, fontSize: '13px' }}>
             {data.message}
           </p>
         </div>
@@ -119,29 +160,43 @@ export default function SendMoneyWidget() {
   if (data?.blocked) {
     return (
       <div style={{
-        padding: '24px',
+        padding: '28px',
         background: isDark
-          ? 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)'
-          : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
-        borderRadius: '12px',
-        border: `2px solid ${isDark ? '#ef4444' : '#fca5a5'}`,
-        color: isDark ? '#ffffff' : '#7f1d1d'
+          ? 'linear-gradient(145deg, rgba(127, 29, 29, 0.95), rgba(153, 27, 27, 0.98))'
+          : 'linear-gradient(145deg, #fef2f2 0%, #fee2e2 100%)',
+        borderRadius: '24px',
+        border: `1px solid ${isDark ? 'rgba(239, 68, 68, 0.4)' : '#fca5a5'}`,
+        color: isDark ? '#ffffff' : '#7f1d1d',
+        boxShadow: '0 25px 50px -12px rgba(239, 68, 68, 0.25)',
+        maxWidth: '440px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-          <span style={{ fontSize: '32px' }}>🛑</span>
-          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Transaction Blocked</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+          <div style={{
+            width: '44px',
+            height: '44px',
+            borderRadius: '12px',
+            background: isDark ? 'rgba(255,255,255,0.15)' : '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '22px'
+          }}>
+            🛑
+          </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
+              Transaction Blocked
+            </h3>
+            <span style={{ fontSize: '12px', opacity: 0.85 }}>Scam Prevention Engine Intervened</span>
+          </div>
         </div>
-        <p style={{ margin: '0 0 12px 0', fontSize: '14px' }}>
+        <p style={{ margin: '0 0 16px 0', fontSize: '14px', lineHeight: 1.5, background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.6)', padding: '12px 14px', borderRadius: '12px' }}>
           <strong>Reason:</strong> {data.reason}
         </p>
         {data.riskScore !== undefined && (
-          <div style={{ fontSize: '13px', opacity: 0.9 }}>
-            <p style={{ margin: '0 0 4px 0' }}>
-              <strong>Risk Score:</strong> {data.riskScore}/100
-            </p>
-            <p style={{ margin: 0 }}>
-              <strong>Risk Level:</strong> {data.riskLevel}
-            </p>
+          <div style={{ display: 'flex', gap: '16px', fontSize: '13px', opacity: 0.95 }}>
+            <div>Risk Score: <strong>{data.riskScore}/100</strong></div>
+            <div>Risk Level: <strong>{data.riskLevel}</strong></div>
           </div>
         )}
       </div>
@@ -151,248 +206,239 @@ export default function SendMoneyWidget() {
   if (data?.requiresConfirmation) {
     return (
       <div style={{
-        padding: '24px',
+        padding: '28px',
         background: isDark
-          ? 'linear-gradient(135deg, #92400e 0%, #b45309 100%)'
-          : 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-        borderRadius: '12px',
-        border: `2px solid ${isDark ? '#f59e0b' : '#fbbf24'}`,
-        color: isDark ? '#ffffff' : '#92400e'
+          ? 'linear-gradient(145deg, rgba(146, 64, 14, 0.95), rgba(180, 83, 9, 0.98))'
+          : 'linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%)',
+        borderRadius: '24px',
+        border: `1px solid ${isDark ? 'rgba(245, 158, 11, 0.4)' : '#fde68a'}`,
+        color: isDark ? '#ffffff' : '#92400e',
+        boxShadow: '0 25px 50px -12px rgba(245, 158, 11, 0.25)',
+        maxWidth: '440px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-          <span style={{ fontSize: '32px' }}>⚠️</span>
-          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Security Alert</h3>
-        </div>
-        <p style={{ margin: '0 0 12px 0', fontSize: '14px' }}>
-          <strong>Alert:</strong> {data.reason}
-        </p>
-        {data.riskScore !== undefined && (
-          <div style={{ fontSize: '13px', opacity: 0.9, marginBottom: '12px' }}>
-            <p style={{ margin: '0 0 4px 0' }}>
-              <strong>Risk Score:</strong> {data.riskScore}/100
-            </p>
-            <p style={{ margin: 0 }}>
-              <strong>Risk Level:</strong> {data.riskLevel}
-            </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+          <div style={{
+            width: '44px',
+            height: '44px',
+            borderRadius: '12px',
+            background: isDark ? 'rgba(255,255,255,0.15)' : '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '22px'
+          }}>
+            ⚠️
           </div>
-        )}
+          <div>
+            <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, fontFamily: 'Outfit, sans-serif' }}>
+              Security Confirmation Required
+            </h3>
+            <span style={{ fontSize: '12px', opacity: 0.9 }}>Heuristic Risk Flag Triggered</span>
+          </div>
+        </div>
+        <p style={{ margin: '0 0 14px 0', fontSize: '14px', lineHeight: 1.5, background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.6)', padding: '12px 14px', borderRadius: '12px' }}>
+          {data.reason}
+        </p>
+
         <label style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
-          fontSize: '14px',
+          gap: '10px',
+          fontSize: '13px',
           cursor: 'pointer',
-          marginBottom: '12px'
+          marginBottom: '16px',
+          fontWeight: 500
         }}>
           <input
             type="checkbox"
             checked={bypassAlert}
             onChange={(e) => setBypassAlert(e.target.checked)}
-            style={{ cursor: 'pointer' }}
+            style={{ width: '16px', height: '16px', accentColor: '#f59e0b', cursor: 'pointer' }}
           />
-          I understand the risk and want to proceed
+          I have verified the recipient and accept full risk
         </label>
         <button
+          type="button"
           onClick={handleSendMoney}
           disabled={!bypassAlert || loading}
           style={{
             width: '100%',
-            padding: '10px',
-            borderRadius: '6px',
+            padding: '12px',
+            borderRadius: '12px',
             border: 'none',
             background: !bypassAlert || loading
-              ? isDark ? '#4b5563' : '#d1d5db'
-              : isDark ? '#ef4444' : '#dc2626',
-            color: !bypassAlert || loading
-              ? isDark ? '#9ca3af' : '#6b7280'
-              : '#ffffff',
+              ? isDark ? '#475569' : '#cbd5e1'
+              : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            color: '#ffffff',
             fontSize: '14px',
-            fontWeight: '600',
-            cursor: !bypassAlert || loading ? 'not-allowed' : 'pointer'
+            fontWeight: 700,
+            cursor: !bypassAlert || loading ? 'not-allowed' : 'pointer',
+            transition: 'all 0.2s ease'
           }}
         >
-          {loading ? 'Processing...' : 'Proceed with Transfer'}
+          {loading ? 'Executing Transfer...' : 'Override & Send Money →'}
         </button>
-      </div>
-    );
-  }
-
-  if (data?.error) {
-    return (
-      <div style={{
-        padding: '24px',
-        background: isDark
-          ? 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)'
-          : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
-        borderRadius: '12px',
-        border: `2px solid ${isDark ? '#ef4444' : '#fca5a5'}`,
-        color: isDark ? '#ffffff' : '#7f1d1d'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-          <span style={{ fontSize: '32px' }}>❌</span>
-          <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Error</h3>
-        </div>
-        <p style={{ margin: 0, fontSize: '14px' }}>{data.error}</p>
       </div>
     );
   }
 
   return (
     <div style={{
-      padding: '24px',
-      background: bgColor,
-      borderRadius: '12px',
+      padding: '28px',
+      background: cardBg,
+      borderRadius: '24px',
       border: `1px solid ${borderColor}`,
       color: textColor,
-      maxWidth: '420px'
+      maxWidth: '440px',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      backdropFilter: 'blur(16px)'
     }}>
+      <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div style={{
+          width: '44px',
+          height: '44px',
+          borderRadius: '12px',
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '20px',
+          color: '#ffffff',
+          boxShadow: '0 8px 16px -4px rgba(16, 185, 129, 0.5)'
+        }}>
+          💸
+        </div>
+        <div>
+          <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 700, fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.3px' }}>
+            Send Money
+          </h2>
+          <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: subTextColor }}>
+            Instant peer-to-peer ledger transfer
+          </p>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+        <div>
+          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: subTextColor, marginBottom: '6px' }}>
+            Sender Handle
+          </label>
+          <input
+            type="text"
+            placeholder="john.doe@fufa"
+            value={formData.senderHandle}
+            onChange={(e) => handleChange('senderHandle', e.target.value)}
+            disabled={loading}
+            style={{
+              width: '100%',
+              padding: '10px 12px',
+              borderRadius: '10px',
+              border: `1px solid ${inputBorder}`,
+              background: inputBg,
+              color: textColor,
+              fontSize: '13px',
+              outline: 'none'
+            }}
+          />
+        </div>
+        <div>
+          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: subTextColor, marginBottom: '6px' }}>
+            Recipient Handle
+          </label>
+          <input
+            type="text"
+            placeholder="jane.smith@fufa"
+            value={formData.receiverHandle}
+            onChange={(e) => handleChange('receiverHandle', e.target.value)}
+            disabled={loading}
+            style={{
+              width: '100%',
+              padding: '10px 12px',
+              borderRadius: '10px',
+              border: `1px solid ${inputBorder}`,
+              background: inputBg,
+              color: textColor,
+              fontSize: '13px',
+              outline: 'none'
+            }}
+          />
+        </div>
+      </div>
+
+      <div style={{ marginBottom: '14px' }}>
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: subTextColor, marginBottom: '6px' }}>
+          Amount (in ₹ Rupees)
+        </label>
+        <div style={{ position: 'relative' }}>
+          <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontWeight: 700, color: subTextColor }}>₹</span>
+          <input
+            type="number"
+            placeholder="500.00"
+            value={formData.amountInCents}
+            onChange={(e) => handleChange('amountInCents', e.target.value)}
+            disabled={loading}
+            step="0.01"
+            min="0"
+            style={{
+              width: '100%',
+              padding: '10px 12px 10px 28px',
+              borderRadius: '10px',
+              border: `1px solid ${inputBorder}`,
+              background: inputBg,
+              color: textColor,
+              fontSize: '15px',
+              fontWeight: 700,
+              fontFamily: 'Outfit, sans-serif',
+              outline: 'none'
+            }}
+          />
+        </div>
+      </div>
+
       <div style={{ marginBottom: '20px' }}>
-        <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 'bold' }}>
-          💸 Send Money
-        </h2>
-        <p style={{ margin: 0, fontSize: '14px', opacity: 0.7 }}>
-          Transfer funds to another FUFA account
-        </p>
-      </div>
-
-      <div style={{ marginBottom: '14px' }}>
-        <label style={{
-          display: 'block',
-          fontSize: '13px',
-          fontWeight: '500',
-          marginBottom: '4px'
-        }}>
-          Your Handle (Sender)
+        <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: subTextColor, marginBottom: '6px' }}>
+          Note / Reference (Optional)
         </label>
         <input
           type="text"
-          placeholder="e.g. john.doe@fufa"
-          value={formData.senderHandle}
-          onChange={(e) => handleChange('senderHandle', e.target.value)}
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '8px 10px',
-            borderRadius: '6px',
-            border: `1px solid ${borderColor}`,
-            background: inputBg,
-            color: textColor,
-            fontSize: '13px',
-            boxSizing: 'border-box',
-            opacity: loading ? 0.6 : 1
-          }}
-        />
-      </div>
-
-      <div style={{ marginBottom: '14px' }}>
-        <label style={{
-          display: 'block',
-          fontSize: '13px',
-          fontWeight: '500',
-          marginBottom: '4px'
-        }}>
-          Recipient Handle
-        </label>
-        <input
-          type="text"
-          placeholder="e.g. jane.smith@fufa"
-          value={formData.receiverHandle}
-          onChange={(e) => handleChange('receiverHandle', e.target.value)}
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '8px 10px',
-            borderRadius: '6px',
-            border: `1px solid ${borderColor}`,
-            background: inputBg,
-            color: textColor,
-            fontSize: '13px',
-            boxSizing: 'border-box',
-            opacity: loading ? 0.6 : 1
-          }}
-        />
-      </div>
-
-      <div style={{ marginBottom: '14px' }}>
-        <label style={{
-          display: 'block',
-          fontSize: '13px',
-          fontWeight: '500',
-          marginBottom: '4px'
-        }}>
-          Amount (in Rupees)
-        </label>
-        <input
-          type="number"
-          placeholder="e.g. 100.50"
-          value={formData.amountInCents}
-          onChange={(e) => handleChange('amountInCents', e.target.value)}
-          disabled={loading}
-          step="0.01"
-          min="0"
-          style={{
-            width: '100%',
-            padding: '8px 10px',
-            borderRadius: '6px',
-            border: `1px solid ${borderColor}`,
-            background: inputBg,
-            color: textColor,
-            fontSize: '13px',
-            boxSizing: 'border-box',
-            opacity: loading ? 0.6 : 1
-          }}
-        />
-      </div>
-
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{
-          display: 'block',
-          fontSize: '13px',
-          fontWeight: '500',
-          marginBottom: '4px'
-        }}>
-          Note (Optional)
-        </label>
-        <textarea
-          placeholder="Payment note or description"
+          placeholder="Payment note"
           value={formData.note}
           onChange={(e) => handleChange('note', e.target.value)}
           disabled={loading}
           style={{
             width: '100%',
-            padding: '8px 10px',
-            borderRadius: '6px',
-            border: `1px solid ${borderColor}`,
+            padding: '10px 12px',
+            borderRadius: '10px',
+            border: `1px solid ${inputBorder}`,
             background: inputBg,
             color: textColor,
             fontSize: '13px',
-            boxSizing: 'border-box',
-            opacity: loading ? 0.6 : 1,
-            minHeight: '60px',
-            fontFamily: 'inherit',
-            resize: 'vertical'
+            outline: 'none'
           }}
         />
       </div>
 
       <button
+        type="button"
         onClick={handleSendMoney}
         disabled={loading || !formData.senderHandle || !formData.receiverHandle || !formData.amountInCents}
         style={{
           width: '100%',
-          padding: '12px',
-          borderRadius: '8px',
+          padding: '14px',
+          borderRadius: '12px',
           border: 'none',
           background: loading || !formData.senderHandle || !formData.receiverHandle || !formData.amountInCents
-            ? isDark ? '#4b5563' : '#d1d5db'
-            : isDark ? '#10b981' : '#059669',
+            ? isDark ? '#334155' : '#cbd5e1'
+            : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
           color: loading || !formData.senderHandle || !formData.receiverHandle || !formData.amountInCents
-            ? isDark ? '#9ca3af' : '#6b7280'
+            ? isDark ? '#64748b' : '#94a3b8'
             : '#ffffff',
           fontSize: '15px',
-          fontWeight: '600',
+          fontWeight: 600,
+          fontFamily: 'Outfit, sans-serif',
           cursor: loading || !formData.senderHandle || !formData.receiverHandle || !formData.amountInCents ? 'not-allowed' : 'pointer',
-          transition: 'all 0.2s',
+          boxShadow: loading || !formData.senderHandle || !formData.receiverHandle || !formData.amountInCents ? 'none' : '0 10px 20px -5px rgba(16, 185, 129, 0.4)',
+          transition: 'all 0.2s ease',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -401,23 +447,13 @@ export default function SendMoneyWidget() {
       >
         {loading ? (
           <>
-            <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⏳</span>
-            Sending...
+            <span style={{ display: 'inline-block', width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#ffffff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            Processing Transfer...
           </>
         ) : (
-          <>
-            <span>📤</span>
-            Send Money
-          </>
+          'Send Funds Now →'
         )}
       </button>
-
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }
